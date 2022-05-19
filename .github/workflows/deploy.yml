@@ -1,0 +1,41 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - ecs-deploy
+env:
+  AWS_REGION: us-west-1
+  ECR_REPOSITORY: mbtileserver
+jobs:
+  build:
+    name: Build Image
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/ecs-deploy'
+    outputs:
+      image: '${{ steps.build-image.outputs.image }}'
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: '${{ env.AWS_REGION }}'
+          mask-aws-account-id: false
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2
+      - name: 'Build, tag, and push image to Amazon ECR'
+        id: build-image
+        env:
+          ECR_REGISTRY: '${{ steps.login-ecr.outputs.registry }}'
+          IMAGE_TAG: '${{ github.sha }}'
+        run: >
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f
+          ./docker/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output
+          name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+  #deploy:
+    #name: Deploy to ECS
