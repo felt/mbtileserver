@@ -1,0 +1,317 @@
+{
+    "ipcMode": null,
+    "executionRoleArn": "arn:aws:iam::270509796552:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+      {
+        "dnsSearchDomains": null,
+        "environmentFiles": null,
+        "logConfiguration": {
+          "logDriver": "awsfirelens",
+          "secretOptions": [
+            {
+              "valueFrom": "arn:aws:secretsmanager:us-west-1:270509796552:secret:DATADOG-Y1rdRd:DATADOG_API_KEY::",
+              "name": "apikey"
+            }
+          ],
+          "options": {
+            "dd_message_key": "log",
+            "compress": "gzip",
+            "provider": "ecs",
+            "dd_service": "mbtileserver",
+            "Host": "http-intake.logs.datadoghq.com",
+            "TLS": "on",
+            "dd_source": "golang",
+            "dd_tags": "project:fluent-bit",
+            "Name": "datadog"
+          }
+        },
+        "entryPoint": null,
+        "portMappings": [
+          {
+            "hostPort": 8000,
+            "protocol": "tcp",
+            "containerPort": 8000
+          }
+        ],
+        "command": [
+          "-d",
+          "/tilesets/published",
+          "--disable-svc-list",
+          "--auth-token",
+          "ae73f61671cf"
+        ],
+        "linuxParameters": null,
+        "cpu": 0,
+        "environment": [],
+        "resourceRequirements": null,
+        "ulimits": [
+          {
+            "name": "nofile",
+            "softLimit": 65535,
+            "hardLimit": 65535
+          }
+        ],
+        "dnsServers": null,
+        "mountPoints": [
+          {
+            "readOnly": null,
+            "containerPath": "/tilesets",
+            "sourceVolume": "efs_mount"
+          }
+        ],
+        "workingDirectory": null,
+        "secrets": null,
+        "dockerSecurityOptions": null,
+        "memory": null,
+        "memoryReservation": null,
+        "volumesFrom": [],
+        "stopTimeout": null,
+        "image": "270509796552.dkr.ecr.us-west-1.amazonaws.com/mbtileserver:prod_felt",
+        "startTimeout": null,
+        "firelensConfiguration": null,
+        "dependsOn": null,
+        "disableNetworking": null,
+        "interactive": null,
+        "healthCheck": null,
+        "essential": true,
+        "links": null,
+        "hostname": null,
+        "extraHosts": null,
+        "pseudoTerminal": null,
+        "user": null,
+        "readonlyRootFilesystem": false,
+        "dockerLabels": {
+          "com.datadoghq.ad.instances": "[{}]",
+          "com.datadoghq.ad.check_names": "[\"ecs_fargate\"]",
+          "com.datadoghq.ad.init_configs": "[{}]"
+        },
+        "systemControls": null,
+        "privileged": null,
+        "name": "mbtileserver"
+      },
+      {
+        "dnsSearchDomains": null,
+        "environmentFiles": null,
+        "logConfiguration": null,
+        "entryPoint": null,
+        "portMappings": [],
+        "command": null,
+        "linuxParameters": null,
+        "cpu": 0,
+        "environment": [
+          {
+            "name": "ECS_FARGATE",
+            "value": "true"
+          },
+          {
+              "name": "DD_APM_ENABLED",
+              "value": "true"
+          }
+        ],
+        "resourceRequirements": null,
+        "ulimits": null,
+        "dnsServers": null,
+        "mountPoints": [],
+        "workingDirectory": null,
+        "secrets": [
+          {
+            "valueFrom": "arn:aws:secretsmanager:us-west-1:270509796552:secret:DATADOG-Y1rdRd:DATADOG_API_KEY::",
+            "name": "DD_API_KEY"
+          }
+        ],
+        "dockerSecurityOptions": null,
+        "memory": null,
+        "memoryReservation": null,
+        "volumesFrom": [],
+        "stopTimeout": null,
+        "image": "public.ecr.aws/datadog/agent:latest",
+        "startTimeout": null,
+        "firelensConfiguration": null,
+        "dependsOn": null,
+        "disableNetworking": null,
+        "interactive": null,
+        "healthCheck": null,
+        "essential": true,
+        "links": null,
+        "hostname": null,
+        "extraHosts": null,
+        "pseudoTerminal": null,
+        "user": null,
+        "readonlyRootFilesystem": null,
+        "dockerLabels": null,
+        "systemControls": null,
+        "privileged": null,
+        "name": "datadog-agent"
+      },
+      {
+        "dnsSearchDomains": null,
+        "environmentFiles": null,
+        "logConfiguration": null,
+        "entryPoint": null,
+        "portMappings": [],
+        "command": null,
+        "linuxParameters": null,
+        "cpu": 0,
+        "environment": [],
+        "resourceRequirements": null,
+        "ulimits": null,
+        "dnsServers": null,
+        "mountPoints": [],
+        "workingDirectory": null,
+        "secrets": null,
+        "dockerSecurityOptions": null,
+        "memory": null,
+        "memoryReservation": null,
+        "volumesFrom": [],
+        "stopTimeout": null,
+        "image": "amazon/aws-for-fluent-bit:latest",
+        "startTimeout": null,
+        "firelensConfiguration": {
+          "type": "fluentbit",
+          "options": {
+            "enable-ecs-log-metadata": "true"
+          }
+        },
+        "dependsOn": null,
+        "disableNetworking": null,
+        "interactive": null,
+        "healthCheck": null,
+        "essential": true,
+        "links": null,
+        "hostname": null,
+        "extraHosts": null,
+        "pseudoTerminal": null,
+        "user": "0",
+        "readonlyRootFilesystem": null,
+        "dockerLabels": null,
+        "systemControls": null,
+        "privileged": null,
+        "name": "log_router"
+      }
+    ],
+    "placementConstraints": [],
+    "memory": "4096",
+    "taskRoleArn": "arn:aws:iam::270509796552:role/ecsTaskExecutionRole",
+    "compatibilities": [
+      "EC2",
+      "FARGATE"
+    ],
+    "taskDefinitionArn": "arn:aws:ecs:us-west-1:270509796552:task-definition/mbtileserver_task:15",
+    "family": "mbtileserver_task",
+    "requiresAttributes": [
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.ecr-auth"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.logging-driver.awsfirelens"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.task-iam-role"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.execution-role-ecr-pull"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.task-eni"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.efsAuth"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.firelens.fluentbit"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.secrets.asm.environment-variables"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.efs"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "com.amazonaws.ecs.capability.docker-remote-api.1.25"
+      },
+      {
+        "targetId": null,
+        "targetType": null,
+        "value": null,
+        "name": "ecs.capability.secrets.asm.bootstrap.log-driver"
+      }
+    ],
+    "pidMode": null,
+    "requiresCompatibilities": [
+      "FARGATE"
+    ],
+    "networkMode": "awsvpc",
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX",
+      "cpuArchitecture": null
+    },
+    "cpu": "2048",
+    "inferenceAccelerators": null,
+    "proxyConfiguration": null,
+    "volumes": [
+      {
+        "fsxWindowsFileServerVolumeConfiguration": null,
+        "efsVolumeConfiguration": {
+          "transitEncryptionPort": null,
+          "fileSystemId": "fs-0dae83bce1c881f2e",
+          "authorizationConfig": {
+            "iam": "DISABLED",
+            "accessPointId": null
+          },
+          "transitEncryption": "DISABLED",
+          "rootDirectory": ""
+        },
+        "name": "efs_mount",
+        "host": null,
+        "dockerVolumeConfiguration": null
+      }
+    ]
+  }
