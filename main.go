@@ -21,6 +21,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	echoDatadog "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+
 	"github.com/evalphobia/logrus_sentry"
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
@@ -288,8 +291,8 @@ func serve() {
 		EnablePreview:      !disablePreview,
 		EnableArcGIS:       enableArcGIS,
 		EnableReloadSignal: enableReloadSignal,
-		AuthToken:        	authToken,
-		GenerateID:			generateID,
+		AuthToken:          authToken,
+		GenerateID:         generateID,
 		BaseDir:            tilePath,
 	})
 	if err != nil {
@@ -344,9 +347,13 @@ func serve() {
 		}
 	}
 
+	tracer.Start()
+	defer tracer.Stop()
+
 	e := echo.New()
 	e.HideBanner = true
 	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(echoDatadog.Middleware(echoDatadog.WithServiceName("mbtileserver")))
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
