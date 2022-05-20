@@ -22,7 +22,9 @@ import (
 	"github.com/labstack/echo/v4"
 
 	echoDatadog "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
+
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 
 	"github.com/evalphobia/logrus_sentry"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,6 +34,9 @@ import (
 	mbtiles "github.com/brendan-ward/mbtiles-go"
 	"github.com/consbio/mbtileserver/handlers"
 )
+
+const SERVICE_NAME = "mbtileserver"
+const ENV = "production"
 
 var (
 	tilesets    map[string]mbtiles.MBtiles
@@ -347,13 +352,30 @@ func serve() {
 		}
 	}
 
-	tracer.Start()
+	tracer.Start(
+		tracer.WithService(SERVICE_NAME),
+		tracer.WithEnv(ENV),
+	)
 	defer tracer.Stop()
+
+	err = profiler.Start(
+		profiler.WithService(SERVICE_NAME),
+		profiler.WithEnv(ENV),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+		),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer profiler.Stop()
 
 	e := echo.New()
 	e.HideBanner = true
 	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(echoDatadog.Middleware(echoDatadog.WithServiceName("mbtileserver")))
+	e.Use(echoDatadog.Middleware(echoDatadog.WithServiceName(SERVICE_NAME)))
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
