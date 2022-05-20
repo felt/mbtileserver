@@ -294,7 +294,6 @@
       "cpuArchitecture": null
     },
     "cpu": "2048",
-    "enableExecuteCommand": true,
     "inferenceAccelerators": null,
     "proxyConfiguration": null,
     "volumes": [
