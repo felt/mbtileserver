@@ -364,6 +364,8 @@ func serve() {
 		profiler.WithProfileTypes(
 			profiler.CPUProfile,
 			profiler.HeapProfile,
+			profiler.MutexProfile,
+			profiler.BlockProfile,
 		),
 	)
 
